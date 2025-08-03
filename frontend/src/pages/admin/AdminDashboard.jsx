@@ -37,7 +37,9 @@ const AdminDashboard = () => {
     totalInquiries: 0,
     resolvedInquiries: 0,
     pendingInquiries: 0,
-    totalGalleryItems: 0
+    totalGalleryItems: 0,
+    razorpaySuccess: 0,
+    razorpayPending: 0
   })
 
   useEffect(() => {
@@ -58,7 +60,9 @@ const AdminDashboard = () => {
           totalInquiries: 8,
           resolvedInquiries: 5,
           pendingInquiries: 3,
-          totalGalleryItems: 45
+          totalGalleryItems: 45,
+          razorpaySuccess: 10,
+          razorpayPending: 2
         },
         month: {
           totalDonations: 48,
@@ -68,7 +72,9 @@ const AdminDashboard = () => {
           totalInquiries: 32,
           resolvedInquiries: 24,
           pendingInquiries: 8,
-          totalGalleryItems: 65
+          totalGalleryItems: 65,
+          razorpaySuccess: 42,
+          razorpayPending: 6
         },
         year: {
           totalDonations: 580,
@@ -77,8 +83,10 @@ const AdminDashboard = () => {
           totalRegistrations: 864,
           totalInquiries: 384,
           resolvedInquiries: 350,
-          pendingInquiries: 34,
-          totalGalleryItems: 120
+        pendingInquiries: 34,
+        totalGalleryItems: 120,
+        razorpaySuccess: 500,
+        razorpayPending: 80
         }
       }
 
@@ -176,7 +184,7 @@ const AdminDashboard = () => {
       },
       title: {
         display: true,
-        text: t("admin.dashboard.inquiryStatus")
+        text: t("admin.dashboard.paymentStatus")
       }
     }
   }
@@ -567,6 +575,26 @@ const AdminDashboard = () => {
             </div>
           </>
         )}
+
+        {/* Chart for Razorpay Payment Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <Doughnut
+              options={doughnutChartOptions}
+              data={{
+                labels: ['Success', 'Pending'],
+                datasets: [
+                  {
+                    data: [stats.razorpaySuccess, stats.razorpayPending],
+                    backgroundColor: ["rgba(16, 185, 129, 0.6)", "rgba(245, 158, 11, 0.6)"],
+                    borderColor: ["rgba(16, 185, 129, 1)", "rgba(245, 158, 11, 1)"],
+                    borderWidth: 1
+                  }
+                ]
+              }}
+            />
+          </div>
+        </div>
       </div>
     </>
   )

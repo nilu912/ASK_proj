@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../../node_modules/react-i18next";
 import { Helmet } from "react-helmet-async";
@@ -15,7 +15,13 @@ const AdminLogin = () => {
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState(null);
-  const { login, user } = useAuth();
+  const { login, user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/admin/"); // or your desired route
+    }
+  }, [user, loading, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -67,7 +73,7 @@ const AdminLogin = () => {
     try {
       setIsSubmitting(true);
       const res = await axios.post("/auth/login", formData);
-      console.log(res)
+      console.log(res);
       const { token, user } = res.data;
 
       login(user, token); // from AuthContext

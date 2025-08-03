@@ -1,272 +1,131 @@
-import { useState, useEffect } from "react"
-import { useTranslation } from "../../node_modules/react-i18next"
-import { Helmet } from "react-helmet-async"
+import { useState, useEffect } from "react";
+import { useTranslation } from "../../node_modules/react-i18next";
+import { Helmet } from "react-helmet-async";
 
 const Events = () => {
-  const { t } = useTranslation()
-  const [events, setEvents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [selectedEvent, setSelectedEvent] = useState(null)
-  const [showRegistrationForm, setShowRegistrationForm] = useState(false)
-  const [formData, setFormData] = useState({})
-  const [formSubmitting, setFormSubmitting] = useState(false)
-  const [formSuccess, setFormSuccess] = useState(false)
-  const [formError, setFormError] = useState("")
+  const { t } = useTranslation();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [formSubmitting, setFormSubmitting] = useState(false);
+  const [formSuccess, setFormSuccess] = useState(false);
+  const [formError, setFormError] = useState("");
 
-  // Mock data - would be fetched from API in a real implementation
+  // Fetch events from API
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const mockEvents = [
-        {
-          id: "1",
-          name: "Annual Charity Gala",
-          date: "2023-12-15",
-          description:
-            "Join us for our flagship fundraising event with dinner, entertainment, and auction. All proceeds go towards supporting our rehabilitation programs.",
-          location: "Grand Hotel, City Center",
-          fees: 1500,
-          image: "/placeholder-event-1.jpg",
-          registrationFields: [
-            {
-              id: "name",
-              label: t("events.form.name"),
-              type: "text",
-              required: true
-            },
-            {
-              id: "email",
-              label: t("events.form.email"),
-              type: "email",
-              required: true
-            },
-            {
-              id: "phone",
-              label: t("events.form.phone"),
-              type: "tel",
-              required: true
-            },
-            {
-              id: "address",
-              label: t("events.form.address"),
-              type: "textarea",
-              required: false
-            },
-            {
-              id: "mealPreference",
-              label: t("events.form.mealPreference"),
-              type: "select",
-              required: true,
-              options: ["Vegetarian", "Non-Vegetarian", "Vegan"]
-            }
-          ]
-        },
-        {
-          id: "2",
-          name: "Awareness Workshop",
-          date: "2023-03-10",
-          description:
-            "Educational workshop on disability rights, accessibility, and inclusion. Open to all community members interested in learning and advocating for disability rights.",
-          location: "Community Center, East Wing",
-          fees: null,
-          image: "/placeholder-event-2.jpg",
-          registrationFields: [
-            {
-              id: "name",
-              label: t("events.form.name"),
-              type: "text",
-              required: true
-            },
-            {
-              id: "email",
-              label: t("events.form.email"),
-              type: "email",
-              required: true
-            },
-            {
-              id: "phone",
-              label: t("events.form.phone"),
-              type: "tel",
-              required: false
-            },
-            {
-              id: "organization",
-              label: t("events.form.organization"),
-              type: "text",
-              required: false
-            }
-          ]
-        },
-        {
-          id: "3",
-          name: "Community Sports Day",
-          date: "2023-08-05",
-          description:
-            "Inclusive sports activities for people of all abilities. Join us for a day of fun, games, and community building through adaptive sports.",
-          location: "City Sports Complex",
-          fees: 200,
-          image: "/placeholder-event-3.jpg",
-          registrationFields: [
-            {
-              id: "name",
-              label: t("events.form.name"),
-              type: "text",
-              required: true
-            },
-            {
-              id: "email",
-              label: t("events.form.email"),
-              type: "email",
-              required: true
-            },
-            {
-              id: "phone",
-              label: t("events.form.phone"),
-              type: "tel",
-              required: true
-            },
-            {
-              id: "age",
-              label: t("events.form.age"),
-              type: "number",
-              required: true
-            },
-            {
-              id: "activityPreference",
-              label: t("events.form.activityPreference"),
-              type: "select",
-              required: true,
-              options: [
-                "Basketball",
-                "Table Tennis",
-                "Chess",
-                "Carrom",
-                "Athletics"
-              ]
-            },
-            {
-              id: "specialRequirements",
-              label: t("events.form.specialRequirements"),
-              type: "textarea",
-              required: false
-            }
-          ]
-        },
-        {
-          id: "4",
-          name: "Health Camp",
-          date: "2023-10-20",
-          description:
-            "Free health check-ups and consultations for people with disabilities. Services include general health assessment, physiotherapy consultation, and assistive device evaluation.",
-          location: "Apang Seva Kendra Main Center",
-          fees: null,
-          image: "/placeholder-event-4.jpg",
-          registrationFields: [
-            {
-              id: "name",
-              label: t("events.form.name"),
-              type: "text",
-              required: true
-            },
-            {
-              id: "email",
-              label: t("events.form.email"),
-              type: "email",
-              required: false
-            },
-            {
-              id: "phone",
-              label: t("events.form.phone"),
-              type: "tel",
-              required: true
-            },
-            {
-              id: "age",
-              label: t("events.form.age"),
-              type: "number",
-              required: true
-            },
-            {
-              id: "medicalHistory",
-              label: t("events.form.medicalHistory"),
-              type: "textarea",
-              required: false
-            },
-            {
-              id: "consultationType",
-              label: t("events.form.consultationType"),
-              type: "select",
-              required: true,
-              options: [
-                "General Health",
-                "Physiotherapy",
-                "Assistive Devices",
-                "Psychological Counseling"
-              ]
-            }
-          ]
-        }
-      ]
-      setEvents(mockEvents)
-      setLoading(false)
-    }, 1000)
-  }, [t])
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/events`
+        );
+        const data = await response.json();
 
-  const handleRegisterClick = event => {
-    setSelectedEvent(event)
-    setShowRegistrationForm(true)
-    setFormData({})
-    setFormSuccess(false)
-    setFormError("")
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+        if (data.success && Array.isArray(data.data)) {
+          const processed = data.data.map((event) => {
+            const start = event.startDate?.$date || event.startDate;
+            return {
+              _id: event._id,
+              title: event.title,
+              description: event.description,
+              location: event.address || event.location,
+              fees: event.fees,
+              image:
+                event.images?.[0]?.url ||
+                event.image ||
+                "/placeholder-event.jpg",
+              registrationFields: (event.registrationFields || []).map((f) =>
+                typeof f === "string" ? JSON.parse(f) : f
+              ),
+              startDate: new Date(start),
+            };
+          });
+          setEvents(processed);
+        } else {
+          throw new Error("Failed to fetch events");
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  const handleRegisterClick = (event) => {
+    setSelectedEvent(event);
+    setShowRegistrationForm(true);
+    setFormData({});
+    setFormSuccess(false);
+    setFormError("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleInputChange = (fieldId, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [fieldId]: value
-    }))
-  }
+      [fieldId]: value,
+    }));
+  };
 
-  const handleSubmit = e => {
-    e.preventDefault()
-    setFormSubmitting(true)
-    setFormError("")
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setFormSubmitting(true);
+    setFormError("");
 
     // Validate required fields
     const missingFields = selectedEvent?.registrationFields
-      .filter(field => field.required && !formData[field.id])
-      .map(field => field.label)
+      .filter((field) => field.required && !formData[field.id])
+      .map((field) => field.label);
 
     if (missingFields && missingFields.length > 0) {
-      setFormError(t("events.form.missingFields") + missingFields.join(", "))
-      setFormSubmitting(false)
-      return
+      setFormError(t("events.form.missingFields") + missingFields.join(", "));
+      setFormSubmitting(false);
+      return;
     }
 
-    // Simulate API call to submit registration
-    setTimeout(() => {
-      setFormSubmitting(false)
-      setFormSuccess(true)
-      // In a real implementation, this would send the data to the backend
-      console.log("Registration submitted:", {
-        eventId: selectedEvent?.id,
-        formData
-      })
-    }, 1500)
-  }
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/reg/events/${
+          selectedEvent._id
+        }/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFormSubmitting(false);
+        setFormSuccess(true);
+      } else {
+        setFormError(data.message || "Registration failed");
+        setFormSubmitting(false);
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setFormError("Failed to submit registration. Please try again.");
+      setFormSubmitting(false);
+    }
+  };
 
   const closeRegistrationForm = () => {
-    setShowRegistrationForm(false)
-    setSelectedEvent(null)
-  }
+    setShowRegistrationForm(false);
+    setSelectedEvent(null);
+  };
 
   // Filter to show only upcoming events
-  const upcomingEvents = events.filter(event => {
-    const eventDate = new Date(event.date)
-    const today = new Date()
-    return eventDate >= today
-  })
+  const upcomingEvents = events.filter((ev) => {
+    const today = new Date();
+    return ev.startDate instanceof Date && ev.startDate >= today;
+  });
 
   return (
     <>
@@ -344,7 +203,7 @@ const Events = () => {
                     )}
 
                     <div className="space-y-4">
-                      {selectedEvent.registrationFields.map(field => (
+                      {selectedEvent.registrationFields.map((field) => (
                         <div key={field.id}>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             {field.label}
@@ -353,11 +212,36 @@ const Events = () => {
                             )}
                           </label>
 
-                          {field.type === "textarea" ? (
+                          {field.type === "radio" ? (
+                            <div className="space-y-2">
+                              {field.options?.map((option) => (
+                                <label
+                                  key={option}
+                                  className="inline-flex items-center mr-4"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={field.id}
+                                    value={option}
+                                    checked={formData[field.id] === option}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        field.id,
+                                        e.target.value
+                                      )
+                                    }
+                                    required={field.required}
+                                    className="form-radio text-accent"
+                                  />
+                                  <span className="ml-2">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+                          ) : field.type === "textarea" ? (
                             <textarea
                               id={field.id}
                               value={formData[field.id] || ""}
-                              onChange={e =>
+                              onChange={(e) =>
                                 handleInputChange(field.id, e.target.value)
                               }
                               required={field.required}
@@ -369,7 +253,7 @@ const Events = () => {
                             <select
                               id={field.id}
                               value={formData[field.id] || ""}
-                              onChange={e =>
+                              onChange={(e) =>
                                 handleInputChange(field.id, e.target.value)
                               }
                               required={field.required}
@@ -378,7 +262,7 @@ const Events = () => {
                               <option value="">
                                 {t("events.form.selectOption")}
                               </option>
-                              {field.options?.map(option => (
+                              {field.options?.map((option) => (
                                 <option key={option} value={option}>
                                   {option}
                                 </option>
@@ -389,7 +273,7 @@ const Events = () => {
                               type={field.type}
                               id={field.id}
                               value={formData[field.id] || ""}
-                              onChange={e =>
+                              onChange={(e) =>
                                 handleInputChange(field.id, e.target.value)
                               }
                               required={field.required}
@@ -453,19 +337,19 @@ const Events = () => {
           </div>
         ) : upcomingEvents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {upcomingEvents.map(event => (
+            {upcomingEvents.map((event) => (
               <div
-                key={event.id}
+                key={event._id}
                 className="bg-white rounded-lg shadow-md overflow-hidden"
               >
                 <img
                   src={event.image}
-                  alt={event.name}
+                  alt={event.title}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
-                    <h2 className="text-xl font-semibold">{event.name}</h2>
+                    <h2 className="text-xl font-semibold">{event.title}</h2>
                     <span className="bg-accent bg-opacity-20 text-accent px-2 py-1 rounded-md text-sm font-medium">
                       {new Date(event.date).toLocaleDateString()}
                     </span>
@@ -551,7 +435,7 @@ const Events = () => {
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Events
+export default Events;

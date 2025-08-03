@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async"
 import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
+import directorsService from "../services/directorsService"
+import eventsService from "../services/eventsService"
+import galleryService from "../services/galleryService"
 
 // Import components as needed
 const HeroBanner = () => {
@@ -9,7 +13,7 @@ const HeroBanner = () => {
     <div
       className="hero"
       style={{
-        backgroundImage: `url('/placeholder-hero.jpg')`,
+        backgroundImage: `url('/hero_banner.jpg')`,
         backgroundSize: "cover",
         backgroundPosition: "center"
       }}
@@ -40,31 +44,47 @@ const HeroBanner = () => {
 
 const BoardOfDirectors = () => {
   const { t } = useTranslation()
+  const [directors, setDirectors] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  // This would be fetched from API in a real implementation
-  const directors = [
-    {
-      id: 1,
-      name: "John Doe",
-      qualification: "Ph.D. in Social Work",
-      occupation: "Professor",
-      photo: "/placeholder-person.jpg" // This will be replaced with actual image from Cloudinary
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      qualification: "M.S. in Healthcare Administration",
-      occupation: "Healthcare Executive",
-      photo: "/placeholder-person.jpg"
-    },
-    {
-      id: 3,
-      name: "Robert Johnson",
-      qualification: "MBA",
-      occupation: "Business Consultant",
-      photo: "/placeholder-person.jpg"
+  useEffect(() => {
+    const fetchDirectors = async () => {
+      try {
+        const data = await directorsService.getAll()
+        setDirectors(data.slice(0, 3)) // Show only first 3 directors
+      } catch (error) {
+        console.error('Error fetching directors:', error)
+        // Fallback to mock data
+        setDirectors([
+          {
+            id: 1,
+            name: "Dr. Rajesh Kumar",
+            qualification: "Ph.D. in Social Work",
+            occupation: "Professor",
+            photo: "/placeholder-person.jpg"
+          },
+          {
+            id: 2,
+            name: "Mrs. Priya Sharma",
+            qualification: "M.S. in Healthcare Administration",
+            occupation: "Healthcare Executive",
+            photo: "/placeholder-person.jpg"
+          },
+          {
+            id: 3,
+            name: "Mr. Amit Patel",
+            qualification: "MBA",
+            occupation: "Business Consultant",
+            photo: "/placeholder-person.jpg"
+          }
+        ])
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+    
+    fetchDirectors()
+  }, [])
 
   return (
     <section className="py-16 bg-gray-50">
