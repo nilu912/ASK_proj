@@ -72,12 +72,13 @@ export const createEvent = async (req, res) => {
       startDate,
       endDate,
       startTime,
-      location,
+      address,
       registrationDeadline,
-      status
+      status,
+      maxParticipants
     } = req.body;
 
-    if (!title || !description || !startDate || !endDate || !location || !startTime) {
+    if (!title || !description || !startDate || !endDate || !address || !startTime) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields.',
@@ -97,7 +98,7 @@ export const createEvent = async (req, res) => {
       startDate,
       endDate,
       startTime,
-      address: location,
+      address: address,
       registrationDeadline,
       images: imageUrl ? [{ url: imageUrl, public_id }] : [],
       status: status || 'Upcoming'

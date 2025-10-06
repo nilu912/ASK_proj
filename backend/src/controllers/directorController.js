@@ -64,14 +64,17 @@ export const getDirector = async (req, res) => {
 export const createDirector = async (req, res) => {
   try {
     let photoUrl = null;
-
+    let {name} = req.body;
+    console.log(name, req.file);
     if (req.file) {
       const result = await streamUpload(req.file.buffer);
       photoUrl = result.secure_url;
     }
+    const socialLinks = JSON.parse(req.body.socialLinks || "{}");
 
     const director = await Director.create({
       ...req.body,
+      socialLinks,
       photo: photoUrl,
     });
 

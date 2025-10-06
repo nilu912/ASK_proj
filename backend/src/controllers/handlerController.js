@@ -1,30 +1,24 @@
-import Handler from '../models/handlerModel.js';
+import { response } from "express";
+import Handler from "../models/handlerModel.js";
+import User from "../models/userModel.js";
+import bcrypt from "bcryptjs";
 
 // @desc Get all handlers
 // @route GET /api/handlers
 // @access Private (Admin only)
 export const getHandlers = async (req, res) => {
   try {
-    const { status, role, department, limit, sort } = req.query;
-    
-    let query = {};
-    if (status) query.status = status;
-    if (role) query.role = role;
-    if (department) query.department = department;
 
-    const handlers = await Handler.find(query)
-      .sort(sort === 'name' ? { name: 1 } : { createdAt: -1 })
-      .limit(limit ? parseInt(limit) : 0);
-
+    const handlers = await User.find({role: "handler"});
     res.status(200).json({
       success: true,
       count: handlers.length,
-      data: handlers
+      data: handlers,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -34,23 +28,23 @@ export const getHandlers = async (req, res) => {
 // @access Private (Admin only)
 export const getHandler = async (req, res) => {
   try {
-    const handler = await Handler.findById(req.params.id);
+    const handler = await User.findById(req.params.id);
 
     if (!handler) {
       return res.status(404).json({
         success: false,
-        message: 'Handler not found'
+        message: "Handler not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: handler
+      data: handler,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -60,16 +54,33 @@ export const getHandler = async (req, res) => {
 // @access Private (Admin only)
 export const createHandler = async (req, res) => {
   try {
-    const handler = await Handler.create(req.body);
+    const { name, email, password, role } = req.body;
+    if (!name || !email || !password)
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(500).json({ message: "User Already Exists!", success: false });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // console.log(name, email);
+    const handler = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: role || "handler",
+    });
+    // console.log(name, email);
 
     res.status(201).json({
       success: true,
-      data: handler
+      data: handler,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -79,30 +90,26 @@ export const createHandler = async (req, res) => {
 // @access Private (Admin only)
 export const updateHandler = async (req, res) => {
   try {
-    const handler = await Handler.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true
-      }
-    );
+    const handler = await Handler.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!handler) {
       return res.status(404).json({
         success: false,
-        message: 'Handler not found'
+        message: "Handler not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: handler
+      data: handler,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -117,7 +124,7 @@ export const deleteHandler = async (req, res) => {
     if (!handler) {
       return res.status(404).json({
         success: false,
-        message: 'Handler not found'
+        message: "Handler not found",
       });
     }
 
@@ -125,12 +132,12 @@ export const deleteHandler = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Handler deleted successfully'
+      message: "Handler deleted successfully",
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -142,10 +149,18 @@ export const updateHandlerStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
-    if (!['active', 'inactive', 'on-leave', 'terminated', 'pending-approval'].includes(status)) {
+    if (
+      ![
+        "active",
+        "inactive",
+        "on-leave",
+        "terminated",
+        "pending-approval",
+      ].includes(status)
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid status value'
+        message: "Invalid status value",
       });
     }
 
@@ -158,18 +173,18 @@ export const updateHandlerStatus = async (req, res) => {
     if (!handler) {
       return res.status(404).json({
         success: false,
-        message: 'Handler not found'
+        message: "Handler not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: handler
+      data: handler,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -179,14 +194,15 @@ export const updateHandlerStatus = async (req, res) => {
 // @access Private (Admin only)
 export const assignHandlerToEvent = async (req, res) => {
   try {
-    const { eventId, title, description, startDate, endDate, status } = req.body;
+    const { eventId, title, description, startDate, endDate, status } =
+      req.body;
 
     const handler = await Handler.findById(req.params.id);
 
     if (!handler) {
       return res.status(404).json({
         success: false,
-        message: 'Handler not found'
+        message: "Handler not found",
       });
     }
 
@@ -197,19 +213,19 @@ export const assignHandlerToEvent = async (req, res) => {
       endDate,
       status,
       assignedBy: req.user.id,
-      eventId
+      eventId,
     });
 
     await handler.save();
 
     res.status(200).json({
       success: true,
-      message: 'Handler assigned to event successfully'
+      message: "Handler assigned to event successfully",
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };

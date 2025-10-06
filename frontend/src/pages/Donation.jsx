@@ -20,7 +20,7 @@ const Donation = () => {
   const [paymentStep, setPaymentStep] = useState("form")
   const [receiptUrl, setReceiptUrl] = useState("")
 
-  const handleInputChange = e => {
+  const handleInputChange = e => { 
     const { name, value, type } = e.target
     const checked = type === "checkbox" ? e.target.checked : undefined
 

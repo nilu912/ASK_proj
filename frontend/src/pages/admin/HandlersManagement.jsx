@@ -1,42 +1,57 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
+import handlersService from "../../services/handlersService";
 
 const HandlersManagement = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
+  const [handlers, setHandlers] = useState([]);
   // Mock data
-  const handlers = [
-    {
-      id: 1,
-      name: 'Chris Evans',
-      role: 'Event Coordinator',
-      email: 'chris@example.com',
-      status: 'Active'
-    },
-    {
-      id: 2,
-      name: 'Emma Watson',
-      role: 'Volunteer Manager',
-      email: 'emma@example.com',
-      status: 'Inactive'
+  // const handlers = [
+  //   {
+  //     id: 1,
+  //     name: "Chris Evans",
+  //     role: "Event Coordinator",
+  //     email: "chris@example.com",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Emma Watson",
+  //     role: "Volunteer Manager",
+  //     email: "emma@example.com",
+  //     status: "Inactive",
+  //   },
+  // ];
+
+  useEffect(() => {
+    const fetchHandlersData = async() => {
+      const response = await handlersService.getAll();
+      console.log(response.data);
+      setHandlers(response.data)
     }
-  ];
+    fetchHandlersData();
+  },[])
 
   return (
     <>
       <Helmet>
-        <title>{t('admin.common.handlers')} | Admin | Apang Seva Kendra</title>
+        <title>{t("admin.common.handlers")} | Admin | Apang Seva Kendra</title>
       </Helmet>
-      
+
       <div className="p-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <h1 className="text-2xl font-semibold text-gray-800">
-            {t('admin.common.handlers')}
+            {t("admin.common.handlers")}
           </h1>
-          <button className="mt-4 md:mt-0 bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-dark transition duration-150">
-            {t('admin.common.add')} Handler
+          <button
+            onClick={() => navigate("/admin/handlers/create")}
+            className="mt-4 md:mt-0 bg-black text-white px-4 py-2 rounded-md hover:bg-accent-dark transition duration-150"
+          >
+            {t("admin.common.add")} Handler
           </button>
         </div>
 
@@ -63,33 +78,45 @@ const HandlersManagement = () => {
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t('admin.common.actions')}
+                      {t("admin.common.actions")}
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {handlers.map((handler) => (
-                    <tr key={handler.id} className="hover:bg-gray-50">
+                    <tr key={handler._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{handler.name}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {handler.name}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{handler.role}</div>
+                        <div className="text-sm text-gray-900">
+                          {handler.role}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{handler.email}</div>
+                        <div className="text-sm text-gray-900">
+                          {handler.email}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${handler.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            handler.status === "Active"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
                           {handler.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-accent hover:text-accent-dark mr-3">
-                          {t('admin.common.edit')}
+                        <button className="text-accent hover:text-accent-dark mr-3" onClick={() => navigate(`/admin/handlers/edit/${handler._id}`)}>
+                          {t("admin.common.edit")}
                         </button>
                         <button className="text-red-600 hover:text-red-900">
-                          {t('admin.common.delete')}
+                          {t("admin.common.delete")}
                         </button>
                       </td>
                     </tr>

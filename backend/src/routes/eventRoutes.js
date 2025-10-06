@@ -20,7 +20,7 @@ router.get('/:id', getEvent);
 router.post('/:id/register', registerForEvent);
 
 // Protected routes (Admin only)
-router.post('/', protect, admin, upload.single('image'), createEvent);
+router.post('/', protect, admin, upload.single('images'), createEvent);
 router.put('/:id', protect, admin, updateEvent);
 router.delete('/:id', protect, admin, deleteEvent);
 router.patch('/:id/status', protect, admin, updateEventStatus);

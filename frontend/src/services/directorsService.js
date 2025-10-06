@@ -26,7 +26,11 @@ export const directorsService = {
   // Create new director
   create: async (directorData) => {
     try {
-      const response = await api.post('/directors', directorData)
+      const response = await api.post('/directors', directorData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
       return response.data
     } catch (error) {
       console.error('Error creating director:', error)

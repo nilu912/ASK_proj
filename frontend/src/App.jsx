@@ -21,7 +21,10 @@ const HandlersManagement = lazy(() => import("./pages/admin/HandlersManagement")
 const EventCreate = lazy(() => import("./pages/admin/EventCreate"));
 const EventRegistrations = lazy(() => import("./pages/admin/EventRegistrations"));
 const GalleryUpload = lazy(() => import("./pages/admin/GalleryUpload"));
-
+const GalleryEdit = lazy(() => import("./pages/admin/GalleryEdit"));
+const HandlersCreate = lazy(() => import("./pages/admin/HandlersCreate"));
+const EventEdit = lazy(() => import("./pages/admin/EventEdit"));
+const HandlerEdit = lazy(() => import("./pages/admin/HandlerEdit"));
 // Layouts
 const Layout = lazy(() => import("./components/layout/Layout"));
 const AdminLayout = lazy(() => import("./components/layout/AdminLayout"));
@@ -65,11 +68,15 @@ function App() {
               <Route path="events" element={<EventsManagement />} />
               <Route path="events/create" element={<EventCreate />} />
               <Route path="events/:eventId/registrations" element={<EventRegistrations />} />
+              <Route path="events/edit/:eventId" element={<EventEdit />} />
               <Route path="gallery" element={<GalleryManagement />} />
               <Route path="gallery/upload" element={<GalleryUpload />} />
+              <Route path="gallery/edit/:id" element={<GalleryEdit />} />
               <Route path="inquiries" element={<InquiriesManagement />} />
               <Route path="donations" element={<DonationsManagement />} />
               <Route path="handlers" element={<HandlersManagement />} />
+              <Route path="handlers/create" element={<HandlersCreate />} />
+              <Route path="handlers/edit/:handlerId" element={<HandlerEdit />} />
             </Route>
           </Routes>
         </Suspense>

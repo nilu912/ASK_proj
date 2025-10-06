@@ -45,9 +45,8 @@ export const getGalleryItems = async (req, res) => {
 // @access Public
 export const getGalleryItem = async (req, res) => {
   try {
-    const galleryItem = await Gallery.findById(req.params.id)
-      .populate('uploadedBy', 'name');
-
+    const galleryItem = await Gallery.findById(req.params.id);
+    console.log("galleryItem")
     if (!galleryItem) {
       return res.status(404).json({
         success: false,
