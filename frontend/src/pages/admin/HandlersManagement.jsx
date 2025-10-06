@@ -28,14 +28,26 @@ const HandlersManagement = () => {
   // ];
 
   useEffect(() => {
-    const fetchHandlersData = async() => {
-      const response = await handlersService.getAll();
-      console.log(response.data);
-      setHandlers(response.data)
-    }
     fetchHandlersData();
-  },[])
+  }, []);
 
+  const fetchHandlersData = async () => {
+    const response = await handlersService.getAll();
+    console.log(response.data);
+    setHandlers(response.data);
+  };
+
+  const deleteHandler = async (id) => {
+    const result = window.confirm("Are you sure you want to delete this user?");
+    if (result)
+      try {
+        const response = await handlersService.delete(id);
+        console.log(response.data);
+        fetchHandlersData();
+      } catch (err) {
+        console.error(err);
+      }
+  };
   return (
     <>
       <Helmet>
@@ -112,10 +124,18 @@ const HandlersManagement = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-accent hover:text-accent-dark mr-3" onClick={() => navigate(`/admin/handlers/edit/${handler._id}`)}>
+                        <button
+                          className="text-accent hover:text-accent-dark mr-3"
+                          onClick={() =>
+                            navigate(`/admin/handlers/edit/${handler._id}`)
+                          }
+                        >
                           {t("admin.common.edit")}
                         </button>
-                        <button className="text-red-600 hover:text-red-900">
+                        <button
+                          className="text-red-600 hover:text-red-900"
+                          onClick={() => deleteHandler(handler._id)}
+                        >
                           {t("admin.common.delete")}
                         </button>
                       </td>
