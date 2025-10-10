@@ -22,6 +22,29 @@ export const streamUpload = (fileBuffer, folder = 'ASK_WEB', resourceType = 'aut
   });
 };
 
+// export const deleteResource = (publicId, resourceType = 'image') => {
+//   return new Promise((resolve, reject) => {
+//     // The destroy method requires the public ID and optionally the resource_type
+//     cloudinary.uploader.destroy(
+//       publicId,
+//       { 
+//         resource_type: "auto",
+//         // Set invalidate: true to immediately remove the asset from the CDN cache
+//         invalidate: true 
+//       },
+//       (error, result) => {
+//         if (error) {
+//           console.error('Cloudinary deletion error:', error);
+//           return reject(error);
+//         }
+
+//         console.log('Cloudinary deletion result:', result);
+//         resolve(result);
+//       }
+//     );
+//   });
+// };
+
 
 // import cloudinary from '../config/cloudinary.js';
 

@@ -1,4 +1,5 @@
 import Inquiry from '../models/inquiryModel.js';
+import { sendInquiryResponse } from '../utils/emailServices.js';
 
 // @desc Get all inquiries
 // @route GET /api/inquiries
@@ -179,7 +180,7 @@ export const updateInquiryStatus = async (req, res) => {
 // @access Private (Admin only)
 export const respondToInquiry = async (req, res) => {
   try {
-    const { message, responseType } = req.body;
+    const { message, responseType, handlerName } = req.body;
 
     const inquiry = await Inquiry.findById(req.params.id);
 
@@ -190,18 +191,29 @@ export const respondToInquiry = async (req, res) => {
       });
     }
 
+    try{
+    const resp = await sendInquiryResponse(inquiry, message, handlerName);
+    if(!resp.success){
+      return res.status(403).json({
+        success: false,
+        message: "something is wrong during mail transfer!"
+      });
+    }
     inquiry.responses.push({
       message,
       respondedBy: req.user.id,
       responseType
     });
+    inquiry.resolved = true;
 
     await inquiry.save();
 
     res.status(200).json({
       success: true,
       message: 'Response added successfully'
-    });
+    });}catch(err){
+      console.log(err)
+    }
   } catch (error) {
     res.status(400).json({
       success: false,

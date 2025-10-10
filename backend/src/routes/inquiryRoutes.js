@@ -8,7 +8,7 @@ import {
   updateInquiryStatus,
   respondToInquiry
 } from '../controllers/inquiryController.js';
-import { protect, admin } from '../middlewares/authMiddleware.js';
+import { protect, admin, handler } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -16,11 +16,11 @@ const router = express.Router();
 router.post('/', createInquiry); // Allow public inquiries
 
 // Protected routes (Admin only)
-router.get('/', protect, admin, getInquiries);
-router.get('/:id', protect, admin, getInquiry);
-router.put('/:id', protect, admin, updateInquiry);
-router.delete('/:id', protect, admin, deleteInquiry);
-router.patch('/:id/status', protect, admin, updateInquiryStatus);
-router.post('/:id/respond', protect, admin, respondToInquiry);
+router.get('/', protect, handler, getInquiries);
+router.get('/:id', protect, handler, getInquiry);
+router.put('/:id', protect, handler, updateInquiry);
+router.delete('/:id', protect, handler, deleteInquiry);
+router.patch('/:id/status', protect, handler, updateInquiryStatus);
+router.post('/:id/respond', protect, handler, respondToInquiry);
 
 export default router;

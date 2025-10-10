@@ -90,7 +90,10 @@ export const createHandler = async (req, res) => {
 // @access Private (Admin only)
 export const updateHandler = async (req, res) => {
   try {
-    const handler = await Handler.findByIdAndUpdate(req.params.id, req.body, {
+    if (req.body.password) {
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+    }
+    const handler = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
@@ -119,7 +122,7 @@ export const updateHandler = async (req, res) => {
 // @access Private (Admin only)
 export const deleteHandler = async (req, res) => {
   try {
-    const handler = await Handler.findById(req.params.id);
+    const handler = await User.findById(req.params.id);
 
     if (!handler) {
       return res.status(404).json({
@@ -128,7 +131,7 @@ export const deleteHandler = async (req, res) => {
       });
     }
 
-    await Handler.findByIdAndDelete(req.params.id);
+    await User.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
       success: true,

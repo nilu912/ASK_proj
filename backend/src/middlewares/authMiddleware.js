@@ -9,7 +9,7 @@ export const protect = async (req, res, next) => {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Authorization token missing or invalid" });
   }
-
+  
   const token = authHeader.split(" ")[1];
 
   try {
@@ -33,12 +33,22 @@ export const protect = async (req, res, next) => {
 
 // Admin middleware - require admin role
 export const admin = (req, res, next) => {
+  
   if (req.user && req.user.role === 'admin') {
     next();
   } else {
     res.status(403).json({ message: "Access denied. Admin only." });
   }
 };
+
+export const handler = (req, res, next) => {
+  if(req.user && (req.user.role == 'handler' || req.user.role == 'admin')) {
+    res.handlerName = req.user.name;
+    next();
+  } else {
+    res.status(403).json({message: "Access denied, Handler only."})
+  }
+}
 
 // Legacy export for backward compatibility
 const verifyToken = protect;
