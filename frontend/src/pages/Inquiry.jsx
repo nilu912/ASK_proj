@@ -1,100 +1,102 @@
-import { useState } from "react"
-import { useTranslation } from "../../node_modules/react-i18next"
-import { Helmet } from "react-helmet-async"
+import { useState } from "react";
+import { useTranslation } from "../../node_modules/react-i18next";
+import { Helmet } from "react-helmet-async";
+import { inquiriesService } from "../services/inquiriesService.js";
 
 const Inquiry = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     subject: "",
     message: "",
-    file: null
-  })
-  const [formErrors, setFormErrors] = useState({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState("idle")
-  const [inquiryId, setInquiryId] = useState(null)
+    file: null,
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("idle");
+  const [inquiryId, setInquiryId] = useState(null);
 
-  const handleInputChange = e => {
-    const { name, value } = e.target
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
-    }))
+      [name]: value,
+    }));
 
     // Clear error when user starts typing
     if (formErrors[name]) {
-      setFormErrors(prev => ({
+      setFormErrors((prev) => ({
         ...prev,
-        [name]: undefined
-      }))
+        [name]: undefined,
+      }));
     }
-  }
+  };
 
-  const handleFileChange = e => {
-    const file = e.target.files?.[0] || null
-    setFormData(prev => ({
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setFormData((prev) => ({
       ...prev,
-      file
-    }))
-  }
+      file,
+    }));
+  };
 
   const validateForm = () => {
-    const errors = {}
+    const errors = {};
 
     if (!formData.name.trim()) {
-      errors.name = t("inquiry.form.errors.nameRequired")
+      errors.name = t("inquiry.form.errors.nameRequired");
     }
 
     if (!formData.email.trim()) {
-      errors.email = t("inquiry.form.errors.emailRequired")
+      errors.email = t("inquiry.form.errors.emailRequired");
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      errors.email = t("inquiry.form.errors.emailInvalid")
+      errors.email = t("inquiry.form.errors.emailInvalid");
     }
 
     if (!formData.phone.trim()) {
-      errors.phone = t("inquiry.form.errors.phoneRequired")
+      errors.phone = t("inquiry.form.errors.phoneRequired");
     } else if (!/^\d{10}$/.test(formData.phone.replace(/[\s-]/g, ""))) {
-      errors.phone = t("inquiry.form.errors.phoneInvalid")
+      errors.phone = t("inquiry.form.errors.phoneInvalid");
     }
 
     if (!formData.subject.trim()) {
-      errors.subject = t("inquiry.form.errors.subjectRequired")
+      errors.subject = t("inquiry.form.errors.subjectRequired");
     }
 
     if (!formData.message.trim()) {
-      errors.message = t("inquiry.form.errors.messageRequired")
+      errors.message = t("inquiry.form.errors.messageRequired");
     }
 
-    setFormErrors(errors)
-    return Object.keys(errors).length === 0
-  }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
-  const handleSubmit = async e => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (!validateForm()) {
-      return
+      return;
     }
 
-    setIsSubmitting(true)
-
-    // Simulate API call to submit inquiry
-    // In a real implementation, this would be an API call to the backend
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setSubmitStatus("success")
-      setInquiryId(
-        "INQ" +
-          Math.floor(Math.random() * 10000)
-            .toString()
-            .padStart(4, "0")
-      )
-    }, 2000)
-  }
+    setIsSubmitting(true);
+    try {
+      const res = await inquiriesService.create(formData);
+      if (res.success) {
+        setIsSubmitting(false);
+        setSubmitStatus("success");
+      } else {
+        setIsSubmitting(false);
+        setSubmitStatus("Something went wrong!");
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      setSubmitStatus("Something went wrong!");
+      console.error(err);
+    }
+  };
 
   const resetForm = () => {
     setFormData({
@@ -103,12 +105,12 @@ const Inquiry = () => {
       phone: "",
       subject: "",
       message: "",
-      file: null
-    })
-    setFormErrors({})
-    setSubmitStatus("idle")
-    setInquiryId(null)
-  }
+      file: null,
+    });
+    setFormErrors({});
+    setSubmitStatus("idle");
+    setInquiryId(null);
+  };
 
   return (
     <>
@@ -404,7 +406,7 @@ const Inquiry = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Inquiry
+export default Inquiry;

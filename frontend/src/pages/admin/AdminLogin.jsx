@@ -72,7 +72,7 @@ const AdminLogin = () => {
     }
     try {
       setIsSubmitting(true);
-      const res = await axios.post("/auth/login", formData);
+      const res = await axios.post("/auth/adminLogin", formData);
       console.log(res);
       const { token, user } = res.data;
 

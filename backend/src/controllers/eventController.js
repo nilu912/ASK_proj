@@ -1,7 +1,7 @@
 import Event from "../models/eventModel.js";
 import cloudinary from "../config/cloudinary.js";
 import { streamUpload } from "../utils/cloudinaryUpload.js";
-
+import {deleteFromCloudinary} from '../utils/deleteCloudinaryFile.js';
 // @desc Get all events
 // @route GET /api/events
 // @access Public
@@ -185,20 +185,68 @@ export const createEvent = async (req, res) => {
 // @route PUT /api/events/:id
 // @access Private (Admin only)
 export const updateEvent = async (req, res) => {
-  try {
-    let imageUrl = null,
-      public_id = null;
+  console.log(req.body)
+  
+  // 1. Prepare the update data object
+  let updateFields = { ...req.body }; // Start by copying all fields from req.body
 
-    if (req.file) {
-      const result = await streamUpload(req.file.buffer);
-      imageUrl = result.secure_url;
-      public_id = result.public_id;
-      console.log("data upload result", result);
+  // OPTIONAL: Remove the redundant startTime field before updating (Recommended)
+  if (updateFields.startTime) {
+    delete updateFields.startTime;
+  }
+  
+  // 2. Handle Image Upload
+  let imageUrl = null;
+  let public_id = null;
+
+  if (req.file) {
+    // Assuming streamUpload works correctly and returns { secure_url, public_id }
+    const result = await streamUpload(req.file.buffer); 
+    imageUrl = result.secure_url;
+    public_id = result.public_id;
+    console.log("data upload result", result);
+    
+    // Set the new image data
+    updateFields.images = [{ url: imageUrl, public_id }];
+  } else if (!req.file && updateFields.images) {
+    // This is crucial: If no new file is uploaded, you likely want to keep existing images.
+    // If you always want to clear old images when no new one is uploaded, use:
+    updateFields.images = []; 
+  }
+
+  // 3. Handle Stringified registrationFields (Based on your console output)
+  // Your console output shows registrationFields as stringified JSON:
+  // "registrationFields[0]": "{\"id\":\"name\", ...}"
+  // You need to parse these strings back into an array of objects.
+  if (req.body['registrationFields[0]']) {
+    const registrationFields = [];
+    for (const key in req.body) {
+      if (key.startsWith('registrationFields')) {
+        try {
+          registrationFields.push(JSON.parse(req.body[key]));
+        } catch (e) {
+          console.error(`Error parsing ${key}:`, e);
+        }
+      }
     }
-    let data = req.body;
+    // Add the parsed array to the update object
+    updateFields.registrationFields = registrationFields;
+    
+    // Clean up the original stringified fields from updateFields
+    for (const key in req.body) {
+      if (key.startsWith('registrationFields')) {
+        delete updateFields[key];
+      }
+    }
+  }
+
+
+  // 4. Execute the Mongoose Update
+  try {
     const event = await Event.findByIdAndUpdate(
       req.params.id,
-      { data, images: imageUrl ? [{ url: imageUrl, public_id }] : [] },
+      // CORRECTED: Spread the updateFields object so all fields are at the top level
+      updateFields,
       {
         new: true,
         runValidators: true,
@@ -223,7 +271,6 @@ export const updateEvent = async (req, res) => {
     });
   }
 };
-
 // @desc Delete event
 // @route DELETE /api/events/:id
 // @access Private (Admin only)
@@ -237,8 +284,9 @@ export const deleteEvent = async (req, res) => {
         message: "Event not found",
       });
     }
-
-    await Event.findByIdAndDelete(req.params.id);
+    const res = await deleteFromCloudinary(event.images[0].public_id)
+    console.log(res)
+    // await Event.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
       success: true,

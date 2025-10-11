@@ -9,7 +9,7 @@ import {
   reorderDirectors
 } from '../controllers/directorController.js';
 
-import { protect, admin } from '../middlewares/authMiddleware.js';
+import { protect, admin, protectForBoth } from '../middlewares/authMiddleware.js';
 import upload from '../middlewares/upload.js'; // Multer middleware
 
 const router = express.Router();
@@ -19,10 +19,10 @@ router.get('/', getDirectors);
 router.get('/:id', getDirector);
 
 // Protected routes (Admin only)
-router.post('/', protect, admin, upload.single('photo'), createDirector);
-router.put('/:id', protect, admin, upload.single('photo'), updateDirector);
-router.delete('/:id', protect, admin, deleteDirector);
-router.patch('/:id/status', protect, admin, updateDirectorStatus);
-router.patch('/reorder', protect, admin, reorderDirectors);
+router.post('/', protectForBoth, admin, upload.single('photo'), createDirector);
+router.put('/:id', protectForBoth, admin, upload.single('photo'), updateDirector);
+router.delete('/:id', protectForBoth, admin, deleteDirector);
+router.patch('/:id/status', protectForBoth, admin, updateDirectorStatus);
+router.patch('/reorder', protectForBoth, admin, reorderDirectors);
 
 export default router;

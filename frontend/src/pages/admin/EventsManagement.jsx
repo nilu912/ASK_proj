@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import { eventsService } from '../../services/eventsService.js';
 
 const EventsManagement = () => {
   const { t } = useTranslation();
@@ -30,7 +31,12 @@ const EventsManagement = () => {
   const handleDelete = async (eventId) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/events/${eventId}`);
+        // await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/events/${eventId}`,{
+        //   headers: {
+        //     authorization: `Bearer ${localStorage.getItem('token')}`
+        //   }
+        // });
+        await eventsService.delete(eventId);
         setEvents(prev => prev.filter(event => event._id !== eventId));
       } catch (error) {
         console.error('Error deleting event:', error);

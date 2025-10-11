@@ -211,14 +211,14 @@ const EventEdit = () => {
 
       data.append("title", formData.title);
       data.append("description", formData.description);
-      data.append("startDate", formData.startDate);
-      data.append("endDate", formData.endDate);
+      data.append("startDate", `${formData.startDate}T${formData.startTime}:00.000Z`);
+      data.append("endDate", `${formData.endDate}T${formData.startTime}:00.000Z`);
       data.append("startTime", formData.startTime);
       data.append("address", formData.address);
       data.append("status", formData.status);
 
       if (formData.registrationDeadline) {
-        data.append("registrationDeadline", formData.registrationDeadline);
+        data.append("registrationDeadline", `${formData.registrationDeadline}T${formData.startTime}:00.000Z`);
       }
 
       if (formData.maxParticipants) {
@@ -230,7 +230,7 @@ const EventEdit = () => {
       });
 
       if (formData.image && updateImg) {
-        data.append("image", formData.image);
+        data.append("images", formData.image);
       }
 
       console.log("FormData being sent:", Object.fromEntries(data.entries()));

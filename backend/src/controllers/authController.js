@@ -62,7 +62,7 @@ export const loginUser = async (req, res) => {
   res.status(200).json({
     success: true,
     token,
-    user: { id: user.id, email: user.email }
+    user: { id: user.id, email: user.email, role: user.role }
   });
 };
 
@@ -71,8 +71,8 @@ export const adminLogin = async (req, res) => {
   console.log(email, password)
   const user = await User.findOne({email});
 
-  if (!user || !bcrypt.compareSync(password, user.password) || user.role == 'admin') {
-    return res.status(401).json({ message: "Invalid email or password" });
+  if (!user || !bcrypt.compareSync(password, user.password) || !user.role == 'admin') {
+  return res.status(401).json({ message: "Invalid email or password" });
   }
 
   const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
@@ -82,6 +82,26 @@ export const adminLogin = async (req, res) => {
   res.status(200).json({
     success: true,
     token,
-    user: { id: user.id, email: user.email }
+    user: { id: user.id, email: user.email, role: user.role }
+  });
+};
+
+export const handlerLogin = async (req, res) => {
+  const { email, password } = req.body;
+  console.log(email, password)
+  const user = await User.findOne({email});
+
+  if (!user || !bcrypt.compareSync(password, user.password) || !user.role == 'handler') {
+  return res.status(401).json({ message: "Invalid email or password" });
+  }
+
+  const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+    expiresIn: "1d"
+  });
+
+  res.status(200).json({
+    success: true,
+    token,
+    user: { id: user.id, email: user.email, role: user.role }
   });
 };

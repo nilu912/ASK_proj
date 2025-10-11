@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
@@ -8,23 +8,9 @@ const InquiriesManagement = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Mock data
-  const inquiries = [
-    {
-      id: 1,
-      subject: 'Donation inquiry',
-      name: 'John Doe',
-      email: 'john@example.com',
-      status: 'Open'
-    },
-    {
-      id: 2,
-      subject: 'Volunteer request',
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      status: 'Closed'
-    }
-  ];
+  useEffect(()=>{
+    
+  },[])
 
   return (
     <>
@@ -37,9 +23,9 @@ const InquiriesManagement = () => {
           <h1 className="text-2xl font-semibold text-gray-800">
             {t('admin.common.inquiries')}
           </h1>
-          <button className="mt-4 bg-black md:mt-0 bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-dark transition duration-150">
+          {/* <button className="mt-4 bg-black md:mt-0 bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-dark transition duration-150">
             {t('admin.common.add')} Inquiry
-          </button>
+          </button> */}
         </div>
 
         {loading ? (

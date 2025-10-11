@@ -59,7 +59,7 @@ export const inquiriesService = {
   // Reply to inquiry
   reply: async (id, replyData) => {
     try {
-      const response = await api.post(`/inquiries/${id}/reply`, replyData)
+      const response = await api.post(`/inquiries/${id}/respond`, replyData)
       return response.data
     } catch (error) {
       console.error('Error replying to inquiry:', error)
